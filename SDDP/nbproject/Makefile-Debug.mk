@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-Linux-x86
-CND_DLIB_EXT=so
+CND_PLATFORM=GNU-MacOSX
+CND_DLIB_EXT=dylib
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/Parser.o \
 	${OBJECTDIR}/main.o
 
 
@@ -52,22 +53,31 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/opt/local/CPLEX_Studio/concert/lib -L/opt/local/CPLEX_Studio/cplex/lib -L/opt/local/CPLEX_Studio/cplex/lib/x86-64_sles10_4.1/static_pic -L/opt/local/CPLEX_Studio/cplex/lib/x86-64_sles10_4.1/static_pic /opt/local/CPLEX_Studio/concert/lib/x86-64_sles10_4.1/static_pic/libconcert.a -lpthread
+LDLIBSOPTIONS=-L../../LIB/cplex/lib/x86-64_osx/static_pic -L../../LIB/concert/lib/x86-64_osx/static_pic ../../LIB/cplex/lib/x86-64_osx/static_pic/libilocplex.a -lpthread ../../LIB/concert/lib/x86-64_osx/static_pic/libconcert.a ../../LIB/cplex/lib/x86-64_osx/static_pic/libcplex.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp: /opt/local/CPLEX_Studio/concert/lib/x86-64_sles10_4.1/static_pic/libconcert.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp: ../../LIB/cplex/lib/x86-64_osx/static_pic/libilocplex.a
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp: ../../LIB/concert/lib/x86-64_osx/static_pic/libconcert.a
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp: ../../LIB/cplex/lib/x86-64_osx/static_pic/libcplex.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp ${OBJECTFILES} ${LDLIBSOPTIONS}
 
+${OBJECTDIR}/Parser.o: Parser.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -DIL_STD -I../../LIB/cplex/include -I../../LIB/concert/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Parser.o Parser.cpp
+
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -DIL_STD -I/opt/local/CPLEX_Studio/cplex/include -I/opt/local/CPLEX_Studio/concert/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -DIL_STD -I../../LIB/cplex/include -I../../LIB/concert/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

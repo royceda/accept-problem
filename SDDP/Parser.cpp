@@ -33,7 +33,7 @@ Parser::Parser(const string & filename) {
 
         double proba;
         proba = 1.0 / double(_nbScenario);
-
+        
         int ite = 0;
         while (ite < _nbCommands) {
             ssline.clear();
@@ -53,13 +53,18 @@ Parser::Parser(const string & filename) {
             ssline.str(line);
 
             int i = 0;
+            vector<int> tmpVector;
             int tmpScenarCost;
+                    
             while ((i < _nbScenario) && (ssline)) {
                 ssline >> tmpScenarCost;
-                _costScenarTask[ite].push_back(tmpScenarCost);
+                tmpVector.push_back(tmpScenarCost);
                 i++;
             }
-
+            
+            _costScenarTask.push_back(tmpVector);
+            tmpVector.clear();
+            
             _probaVector.push_back(proba);
 
             ite++;

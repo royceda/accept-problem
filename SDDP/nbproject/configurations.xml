@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="90">
+<configurationDescriptor version="95">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>Parser.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -12,6 +13,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>Parser.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -37,26 +39,31 @@
       <compileType>
         <ccTool>
           <incDir>
-            <pElem>/opt/local/CPLEX_Studio/cplex/include</pElem>
-            <pElem>/opt/local/CPLEX_Studio/concert/include</pElem>
+            <pElem>../../LIB/cplex/include</pElem>
+            <pElem>../../LIB/concert/include</pElem>
           </incDir>
           <preprocessorList>
             <Elem>IL_STD</Elem>
           </preprocessorList>
         </ccTool>
         <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/sddp</output>
           <linkerAddLib>
-            <pElem>/opt/local/CPLEX_Studio/concert/lib</pElem>
-            <pElem>/opt/local/CPLEX_Studio/cplex/lib</pElem>
-            <pElem>/opt/local/CPLEX_Studio/cplex/lib/x86-64_sles10_4.1/static_pic</pElem>
-            <pElem>/opt/local/CPLEX_Studio/cplex/lib/x86-64_sles10_4.1/static_pic</pElem>
+            <pElem>../../LIB/cplex/lib/x86-64_osx/static_pic</pElem>
+            <pElem>../../LIB/concert/lib/x86-64_osx/static_pic</pElem>
           </linkerAddLib>
           <linkerLibItems>
-            <linkerLibFileItem>/opt/local/CPLEX_Studio/concert/lib/x86-64_sles10_4.1/static_pic/libconcert.a</linkerLibFileItem>
+            <linkerLibFileItem>../../LIB/cplex/lib/x86-64_osx/static_pic/libilocplex.a</linkerLibFileItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerLibFileItem>../../LIB/concert/lib/x86-64_osx/static_pic/libconcert.a</linkerLibFileItem>
+            <linkerLibFileItem>../../LIB/cplex/lib/x86-64_osx/static_pic/libcplex.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="Parser.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Parser.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -80,6 +87,10 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="Parser.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Parser.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>

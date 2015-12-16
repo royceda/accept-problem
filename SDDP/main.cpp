@@ -21,7 +21,8 @@ using namespace std;
 int main(int argc, char** argv) {
 
     IloEnv env;
-    Parser* p = new Parser("./../Instances/data_O5/OA_O5_S10_L0.2_B100_R100_0.txt");
+    Parser* p = new Parser("./../Instances/data_O5/OA_O5_S3_L0.2_B10_R5_0.txt");
+    cout << "Parsing done\n";
     p->printParser();
     env.end();
     
