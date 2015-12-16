@@ -22,6 +22,14 @@ CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/sddp
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
 CND_PACKAGE_NAME_Release=sddp.tar
 CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/sddp.tar
+# concert configuration
+CND_PLATFORM_concert=GNU-Linux-x86
+CND_ARTIFACT_DIR_concert=dist/concert/GNU-Linux-x86
+CND_ARTIFACT_NAME_concert=sddp
+CND_ARTIFACT_PATH_concert=dist/concert/GNU-Linux-x86/sddp
+CND_PACKAGE_DIR_concert=dist/concert/GNU-Linux-x86/package
+CND_PACKAGE_NAME_concert=sddp.tar
+CND_PACKAGE_PATH_concert=dist/concert/GNU-Linux-x86/package/sddp.tar
 #
 # include compiler specific variables
 #
