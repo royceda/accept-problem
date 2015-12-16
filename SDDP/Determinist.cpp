@@ -16,3 +16,9 @@ Determinist::Determinist(const Determinist& orig) {
 Determinist::~Determinist() {
 }
 
+void Determinist::solve(Parser& p){
+    
+    
+    
+    
+}
