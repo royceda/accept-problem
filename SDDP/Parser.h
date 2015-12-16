@@ -24,6 +24,8 @@ public:
     
     int nbScenario();
     
+    int capacity();
+    
     vector<int> probaVector();
     
     vector<vector<int> > costScenarTask();
@@ -32,9 +34,12 @@ public:
     
     vector<int> subTreatedCost();
     
+    void printParser(const Parser& p);
+    
 private:
     int _nbCommands;
     int _nbScenario;
+    int _capacity;
     
     vector<int> _benefVector;
     vector<int> _subTreatedCost;
