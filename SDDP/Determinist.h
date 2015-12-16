@@ -8,7 +8,7 @@
 #ifndef DETERMINIST_H
 #define	DETERMINIST_H
 
-#include <Parser.h>
+#include "Parser.h"
 
 class Determinist {
 public:
