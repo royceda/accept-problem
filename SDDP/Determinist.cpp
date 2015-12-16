@@ -21,6 +21,18 @@ void Determinist::solve(Parser& p){
     
     try{
     IloModel model(env);
+
+        /**Variables*/
+    IloArray <IloNumArray> d(env, p.benef());
+    
+    
+    
+        /**Objectif*/
+    
+    
+        /**Contraintes*/
+    
+    
     
     
     }catch(IloException &e){
