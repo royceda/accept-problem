@@ -26,7 +26,7 @@ public:
     
     int capacity();
     
-    vector<int> probaVector();
+    vector<double> probaVector();
     
     vector<vector<int> > costScenarTask();
     
@@ -34,7 +34,7 @@ public:
     
     vector<int> subTreatedCost();
     
-    void printParser(const Parser& p);
+    void printParser();
     
 private:
     int _nbCommands;
@@ -44,7 +44,7 @@ private:
     vector<int> _benefVector;
     vector<int> _subTreatedCost;
     
-    vector<int> _probaVector;
+    vector<double> _probaVector;
     vector<vector<int> > _costScenarTask; 
 };
 

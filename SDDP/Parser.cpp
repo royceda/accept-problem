@@ -7,6 +7,11 @@
 
 #include <cstdlib>
 #include <sstream>
+#include <iostream>
+#include <fstream>
+
+#include <cstdio>
+
 #include "Parser.h"
 
 using namespace std;
@@ -66,44 +71,44 @@ Parser::Parser(const string & filename) {
 
 }
 
-Parser::printParser(const Parser& p) {
+void Parser::printParser() {
     cout << _nbCommands << " " << _nbScenario << " " << _capacity << "\n";
     for(int i= 0; i<_nbCommands; i++){
         cout << i <<" "<< _benefVector[i] << " " << _subTreatedCost[i] << "\n";
         for (int j=0; j<_nbScenario; j++){
-            cout << costScenarTask[i][j] << " ";
+            cout << _costScenarTask[i][j] << " ";
         }
         cout<<"\n";
     }
     
 }
 
-Parser::nbCommands() {
+int Parser::nbCommands() {
     return _nbCommands;
 }
 
-Parser::nbScenario() {
+int Parser::nbScenario() {
     return _nbScenario;
 }
 
-Parser::capacity() {
+int Parser::capacity() {
     return _capacity;
 }
 
-Parser::benefVector() {
+vector<int> Parser::benefVector() {
     return _benefVector;
 }
 
-Parser::subTreatedCost() {
+vector<int> Parser::subTreatedCost() {
     return _subTreatedCost;
 }
 
-Parser::costScenarTask() {
+vector<vector<int> > Parser::costScenarTask() {
     return _costScenarTask;
 }
 
-Parser::probaVector() {
-    return _probaVector();
+vector<double> Parser::probaVector() {
+    return _probaVector;
 }
 
 
