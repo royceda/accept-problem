@@ -17,8 +17,14 @@ Determinist::~Determinist() {
 }
 
 void Determinist::solve(Parser& p){
+    IloEnv env;
+    
+    try{
+    IloModel model(env);
     
     
+    }catch(IloException &e){
+    }
     
     
 }
