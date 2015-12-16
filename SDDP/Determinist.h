@@ -16,7 +16,7 @@ public:
     Determinist(const Determinist& orig);
     virtual ~Determinist();
     
-    solve(Parser &p);
+    void solve(Parser &p);
     
 private:
 
