@@ -34,7 +34,7 @@ void Determinist::solve(Parser& p){
 
       
     /**init values*/      
-    for(unsigned int i =0; i < n; i++){
+    for( int i =0; i < n; i++){
       x[i] = IloNumVar(env, 0, 1, ILOBOOL);
       y[i] = IloNumVarArray(env, s, 0, 1, ILOBOOL);
     }
@@ -63,7 +63,7 @@ void Determinist::solve(Parser& p){
     for(unsigned int j = 0; j < s; s++){
       IloExpr e1(env);
       for(unsigned int i = 0; i < n; i++){
-	e1 += d[i][j] * ( x[i] - y[i][j]);
+	e1 += d[i][j] * ( x[i] - y[i][j]); //d is vector of demands
       }
       model.add(e1 <= D); // D is the total duration
     }
