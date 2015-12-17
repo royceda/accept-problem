@@ -51,26 +51,34 @@ void Determinist::solve(Parser& p){
     for(unsigned int j = 0; j < s; j++){            
       IloExpr e12(env);
       for(unsigned int i = 0; i < n; i++){     
-	e1 += p.probaVector()[j] * p.subTreatedCost()[i] * y[i][s];
+	e12 += p.probaVector()[j] * p.subTreatedCost()[i] * y[i][s];
       }
       e1 += p.probaVector()[j] *e12; 
     }
     
-    
     IloObjective obj(env, eO - e1, IloObjective::Maximize, "OBJ");      
     
-    /**Contraintes*/
-    
-    for(unsigned int i = 0; i < n; i++){
-      IloExpr e2(env);
+
+    /**Contraintes*/    
+    for(unsigned int j = 0; j < s; s++){
+      IloExpr e1(env);
       for(unsigned int i = 0; i < n; i++){
-	// e2 += 
+	e1 += d[i][j] * ( x[i] - y[i][j]);
+      }
+      model.add(e1 <= D); // D is the total duration
+    }
+
+    for(unsigned int i = 0; i < n; i++){
+      for(unsigned int j = 0; j < s; s++){
+	model.add( y[i][j] <= x[i]);
       }
     }
     
-    
+    /**def y and x*/
+    //Done !!!! ('_')
     
   }catch(IloException &e){
+
   }
     
     
