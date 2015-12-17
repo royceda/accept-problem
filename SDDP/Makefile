@@ -1,13 +1,13 @@
-SYSTEM     =  x86-64_osx
+SYSTEM     =  x86_sles10_4.1
 LIBFORMAT  = static_pic
-CPLEXDIR   = ./../../LIB/cplex
-CONCERTDIR =  ./../../LIB/concert
+CPLEXDIR   = /net/malt/i/rboudjeltia/Documents/lib_/cplex
+CONCERTDIR =  /net/malt/i/rboudjeltia/Documents/lib_/concert
 
 CPLEXBINDIR   = $(CPLEXDIR)/bin/$(SYSTEM)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 
-CPLEXFLAGS = -stdlib=libstdc++ -I$(CPLEXDIR)/include   -I$(CONCERTDIR)/include -L$(CPLEXLIBDIR) -lilocplex -lcplex -L$(CONCERTLIBDIR) -lconcert -lm -m64 -lpthread
+CPLEXFLAGS = -std=c++11 -I$(CPLEXDIR)/include   -I$(CONCERTDIR)/include -L$(CPLEXLIBDIR) -lilocplex -lcplex -L$(CONCERTLIBDIR) -lconcert -lm -m32 -lpthread
 CC = g++ -O0
 CFLAGS = -std=c++11 -O2 -Wall -ansi -pedantic -DIL_STD
 DEBUG = -pg -g -Wall -pedantic -DIL_STD
