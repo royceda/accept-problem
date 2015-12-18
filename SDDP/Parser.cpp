@@ -62,7 +62,7 @@ Parser::Parser(const string & filename) {
                 i++;
             }
             
-            _costScenarTask.push_back(tmpVector);
+            _durationScenarTask.push_back(tmpVector);
             tmpVector.clear();
             
             _probaVector.push_back(proba);
@@ -81,7 +81,7 @@ void Parser::printParser() {
     for(int i= 0; i<_nbCommands; i++){
         cout << i <<" "<< _benefVector[i] << " " << _subTreatedCost[i] << "\n";
         for (int j=0; j<_nbScenario; j++){
-            cout << _costScenarTask[i][j] << " ";
+            cout << _durationScenarTask[i][j] << " ";
         }
         cout<<"\n";
     }
@@ -108,8 +108,8 @@ vector<int> Parser::subTreatedCost() {
     return _subTreatedCost;
 }
 
-vector<vector<int> > Parser::costScenarTask() {
-    return _costScenarTask;
+vector<vector<int> > Parser::durationScenarTask() {
+    return _durationScenarTask;
 }
 
 vector<double> Parser::probaVector() {

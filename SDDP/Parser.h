@@ -28,7 +28,7 @@ public:
     
     vector<double> probaVector();
     
-    vector<vector<int> > costScenarTask();
+    vector<vector<int> > durationScenarTask();
     
     vector<int> benefVector();
     
@@ -45,7 +45,7 @@ private:
     vector<int> _subTreatedCost;
     
     vector<double> _probaVector;
-    vector<vector<int> > _costScenarTask; 
+    vector<vector<int> > _durationScenarTask; 
 };
 
 #endif	/* PARSER_H */
