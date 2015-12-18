@@ -33,7 +33,8 @@ SubProb MasterProb::sub() {
 void MasterProb::solve(Parser &p) {
 
     /*Define the master program from parser*/
-    IloEnv env(env);
+
+    IloEnv env();
     try {
         IloModel model(env);
         IloArray<IloNumVar> x(env, p.nbCommands());
