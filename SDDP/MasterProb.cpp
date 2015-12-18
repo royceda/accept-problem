@@ -1,0 +1,18 @@
+/* 
+ * File:   MasterProb.cpp
+ * Author: rboudjeltia
+ * 
+ * Created on 18 décembre 2015, 11:01
+ */
+
+#include "MasterProb.h"
+
+MasterProb::MasterProb() {
+}
+
+MasterProb::MasterProb(const MasterProb& orig) {
+}
+
+MasterProb::~MasterProb() {
+}
+
