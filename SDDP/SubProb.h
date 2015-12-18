@@ -8,15 +8,18 @@
 #ifndef SUBPROB_H
 #define	SUBPROB_H
 
+#include "ilcplex/ilocplex.h"
+
 class SubProb {
 public:
     SubProb();
     SubProb(const SubProb& orig);
     virtual ~SubProb();
     
+    IloExpr solve(); 
     
 private:
-
+    
 };
 
 #endif	/* SUBPROB_H */

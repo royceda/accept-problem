@@ -16,3 +16,14 @@ SubProb::SubProb(const SubProb& orig) {
 SubProb::~SubProb() {
 }
 
+/**
+ * 
+ * @return Generate the new cut from the sub problem
+ */
+IloExpr SubProb::solve(IloEnv &env){
+    IloExpr cut(env);
+    
+    
+    return cut; // just to trace the generation
+}
+

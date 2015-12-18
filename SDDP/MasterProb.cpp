@@ -16,3 +16,22 @@ MasterProb::MasterProb(const MasterProb& orig) {
 MasterProb::~MasterProb() {
 }
 
+IloExpr MasterProb::obj(){
+    return _obj;
+}
+
+SubProb MasterProb::sub(){
+    return _sub;
+}
+
+
+/**
+ * 
+ * @param p
+ */
+void MasterProb::solve(Parser &p){
+    
+    
+    
+    
+}
