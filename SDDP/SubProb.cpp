@@ -20,8 +20,9 @@ SubProb::~SubProb() {
  * 
  * @return Generate the new cut from the sub problem
  */
-IloExpr SubProb::solve(IloEnv &env){
+IloExpr SubProb::solve(Parser &p){
     IloExpr cut(env);
+
     
     
     
@@ -29,6 +30,9 @@ IloExpr SubProb::solve(IloEnv &env){
     /*stop if theta > w*/
     /*cut creation*/
     
+    /*creat E and e from pi*/
+    
+    cut = e - E*x;
     return cut; // just to trace the generation
 }
 

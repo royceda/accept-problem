@@ -10,13 +10,15 @@
 
 #include "ilcplex/ilocplex.h"
 
+#include "Parser.h"
+
 class SubProb {
 public:
     SubProb();
     SubProb(const SubProb& orig);
     virtual ~SubProb();
     
-    IloExpr solve(); 
+    IloExpr solve(Parser &p); 
     
 private:
     
