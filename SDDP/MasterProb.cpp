@@ -41,11 +41,8 @@ void MasterProb::solve(Parser &p){
     
     /*for each scenario*/
     /*Solve the sub porblem (primal and dual) (w & pi)*/
-    
-    /*check theta validity*/
-    /*stop if theta > w*/
-    
-    /*cut creation*/
+   
+     IloExpr cut = sub().solve(); 
     
     /*add optimality cut El*x + theta > el*/
     

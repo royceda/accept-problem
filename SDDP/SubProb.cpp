@@ -24,6 +24,11 @@ IloExpr SubProb::solve(IloEnv &env){
     IloExpr cut(env);
     
     
+    
+    /*check theta validity*/
+    /*stop if theta > w*/
+    /*cut creation*/
+    
     return cut; // just to trace the generation
 }
 
