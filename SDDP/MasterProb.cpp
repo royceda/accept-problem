@@ -31,7 +31,22 @@ SubProb MasterProb::sub(){
  */
 void MasterProb::solve(Parser &p){
     
+    /*Define the master program from parser*/
     
+    /*For an iteration v (as in the book)*/
     
+    /*solve the determinist program x and theta are the optimal solution*/
+    
+    /*check the validity*/
+    
+    /*for each scenario*/
+    /*Solve the sub porblem (primal and dual) (w & pi)*/
+    
+    /*check theta validity*/
+    /*stop if theta > w*/
+    
+    /*cut creation*/
+    
+    /*add optimality cut El*x + theta > el*/
     
 }
