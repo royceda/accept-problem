@@ -15,13 +15,17 @@
 class SubProb {
 public:
     SubProb();
+    SubProb(IloEnv &env);
     SubProb(const SubProb& orig);
     virtual ~SubProb();
     
+    IloEnv env();
+    
     IloExpr solve(Parser &p); 
     
-private:
     
+private:
+    IloEnv _env;
 };
 
 #endif	/* SUBPROB_H */
