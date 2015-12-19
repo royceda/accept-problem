@@ -50,7 +50,6 @@ IloExpr SubProb::solve(Parser &p){
      IloNumVarArray<IloNumVar> pi(env);
      
      
-     
      /*Definition of s subProblems*/
      for( int i = 0; i < s; i++){
          /*Objective*/
@@ -75,23 +74,55 @@ IloExpr SubProb::solve(Parser &p){
                  model[s].add(y[i][j] <= x[i]);
              }
          }
-        
-        
-        
-       
-           
-        
-    }
+     }
     
+     
+     
     
      /* resolve subProb and dual*/
-    /*check theta validity*/
-    /*stop if theta > w*/
-    /*cut creation*/
+       for( int i = 0; i < s; i++){
+           IloCplex cplex(model);
+           cplex.exportModel("test.lp");
+           IloNumVarArray<IloNumVar> x =  cplex.solve();
+        
+           //check the syntax
+           if(cplex.isDualFeasible()){
+               cplex.Dual();
+           }
+       }
+     
+     
+     
     
-    /*creat E and e from pi*/
     
-    //cut = e - E*x;
-    return cut; // just to trace the generation
+     
+     
+     /*creation of E and e from pi*/
+     IloNumVar e(env); 
+      for( int i = 0; i < s; i++){
+          for(int k = 0; k < n; k++ )
+              e += p.probaVector()[i] * pi[i][k] * D;         
+      }
+     
+     
+     IloExpr E(env);
+      for( int i = 0; i < s; i++){
+          for(int k = 0; k < n; k++ ){
+              E += p.probaVector()[i] * p[i][k] * p.durationScenarTask()[i][k];                
+          }
+      }
+     
+     /*check theta validity*/
+     /*check theta validity*/
+     /*stop if theta > w*/
+     
+     
+     /*cut creation*/
+     for(int k = 0; k < n; k++ ){
+         cut = e - E*x[k];
+     }
+     
+     
+     return cut; // just to trace the generation
 }
 
