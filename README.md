@@ -1,2 +1,8 @@
 # accept-problem
-L-shaped
+
+L-shaped implementation
+_ with optimal cuts
+_ with feasibility cut
+
+_ multicut
+_bunching
