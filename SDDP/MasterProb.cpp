@@ -39,6 +39,10 @@ void MasterProb::solve(Parser &p) {
         IloModel model(env);
         IloArray<IloNumVar> x(env, p.nbCommands());
 
+        //Itialiaze subprob
+        sub(env);
+        
+        
         for (int i = 0; i < p.nbCommands(); i++) {
             x[i] = IloNumVar(env, 0, 1, ILOBOOL);
         }
