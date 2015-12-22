@@ -66,13 +66,17 @@ void Determinist::solve(Parser& p) {
             for (unsigned int i = 0; i < n; i++) {
                 e1 += p.durationScenarTask()[i][j] * (x[i] - y[i][j]); //d is vector of demands
             }
-            model.add(e1 <= D); // D is the total duration
+            model.add(e1 <= IloInt(D)); // D is the total duration
         }
 
         for (unsigned int i = 0; i < n; i++) {
-            for (unsigned int j = 0; j < s; s++) {
-                model.add(y[i][j] <= x[i]);
-            }
+	  for (unsigned int j = 0; j < s; s++) {
+	    IloExpr exp1(env);
+	    IloExpr exp2(env);
+	    exp1 = y[i][j];
+	    exp2 = x[i];
+	    model.add(exp1 <= exp2);
+	  }
         }
 
         /**def y and x*/

@@ -19,7 +19,7 @@ public:
     SubProb(const SubProb& orig);
     virtual ~SubProb();
     
-    IloEnv env();
+    // IloEnv env();
     
     IloExpr solve(Parser &p); 
     
