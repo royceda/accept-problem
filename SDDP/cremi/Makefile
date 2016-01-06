@@ -24,11 +24,11 @@ Determinist.o : Determinist.h Determinist.cpp
 	$(CC) $(CFLAGS) $(CPLEXFLAGS) -c Determinist.cpp
 
 SubProb.o : SubProb.h SubProb.cpp
-        $(CC) $(CFLAGS) $(CPLEXFLAGS) -c SubProb.cpp
+	$(CC) $(CFLAGS) $(CPLEXFLAGS) -c SubProb.cpp
 
 
 MasterProb.o : MasterProb.h MasterProb.cpp
-        $(CC) $(CFLAGS) $(CPLEXFLAGS) -c MasterProb.cpp
+	$(CC) $(CFLAGS) $(CPLEXFLAGS) -c MasterProb.cpp
 
 
 

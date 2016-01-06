@@ -28,57 +28,75 @@ IloExpr SubProb::solve(Parser &p){
   try{
     vector<IloModel> model;
   
-    int s = p.nbScenario();
+    int S = p.nbScenario();
     int n = p.nbCommands();
     int D = p.capacity();
     
     
-    IloArray <IloNumVarArray> y(env, n); //other commands
+    IloArray <IloNumVarArray> y(env, S); //other commands
+    IloNumArray  x(env);//Primal solution of master problem (given)
+    IloArray <IloNumArray> primal(env, S); //primal values of subprob
+    IloArray <IloNumArray> pi(env, S); //dual values of subprob
+    
+     IloArray <IloRangeArray>  constraints(env); //Constraints
+    
     
     /*initilization*/
-    for (int i = 0; i < n; i++) {
-      y[i] = IloNumVarArray(env, s, 0, 1, ILOBOOL);
+    for (int i = 0; i < S; i++) {
+      y[i] = IloNumVarArray(env, S, 0, 1, ILOBOOL);
     }
 
     
-    for( int i = 0; i < s; i++){
-      // model[i] = new IloModel(env);
+    for( int i = 0; i < S; i++){
+      pi[i] = IloNumArray(env, n);
+      primal[i] = IloNumArray(env, n);
+        
     }
      
-    //Primal solution of master problem
-    IloArray<IloNumVar> x(env);
-
-    //Dual solution of sub problem
-    IloArray< IloArray <IloNumVar> >  pi(env);
+    
+     
+  
      
      
-    /*Definition of s subProblems*/
-    for( int i = 0; i < s; i++){
+     
+     
+     
+     
+     
+    /*Definition of s subProblems for each scenario*/
+    for( int s = 0; s < S; s++){
 
       /*Objective*/
       IloExpr e0(env);
       for(int i = 0; i<n; i++){
-
-	e0 += y[i][s] * p.subTreatedCost()[i]; ; 
+          e0 += y[i][s] * p.subTreatedCost()[i]; ; 
       }
-      
       IloObjective obj(env, e0, IloObjective::Maximize, "OBJ");
       model[s].add(obj);
-
-      /*Constraints*/
-      for (unsigned int j = 0; j < s; s++) {
-	IloExpr e1(env);
-	for (unsigned int i = 0; i < n; i++) {
-	  e1 += p.durationScenarTask()[i][j] * (x[i] - y[i][j]); //d is vector of demands
-	}
-	model[s].add(e1 <= D); // D is the total duration
-      }
-        
+      
+      
+    
+      
+      //for (unsigned int k = 0; k < s; k++) {
+      IloExpr e1(env);
       for (unsigned int i = 0; i < n; i++) {
-	for (unsigned int j = 0; j < s; s++) {
-	  model[s].add(y[i][j] <= x[i]);
-	}
+          e1 += p.durationScenarTask()[i][s] * (x[i] - y[i][s]); //d is vector of demands
       }
+      constraints[s].add(e1 <= D); // D is the total duration
+      e1.end();
+      //}
+      
+      
+      for (unsigned int i = 0; i < n; i++) {
+          //for (unsigned int j = 0; j < s; s++) {
+          IloExpr tmp(env);
+          tmp = y[i][s];
+          
+          constraints[s].add(y[i][s]<= x[i]); // [order][scenar]
+          tmp.end();
+          //}
+      }
+      model[s].add(constraints[s] );
     }
     
      
@@ -90,32 +108,27 @@ IloExpr SubProb::solve(Parser &p){
      * get primal solution y
      * get dual solution pi
      */
-    for( int i = 0; i < s; i++){
-      IloCplex cplex(model[i]);
-      cplex.exportModel("test.lp");
-      //x = cplex.solve();
-
-
-
-      //check the syntax
-      if(cplex.isDualFeasible()){
-	// IloNumVarArray duals(env);
-	//cplex.getDuals(duals, range); //avec un iloRange
-	     
-      }
+    for( int s = 0; s < S; s++){
+        //getvalues sol
+      IloCplex cplex(model[s]);
+      cplex.getValues(primal[s], y[s]);
+      cplex.getDuals(pi[s], constraints[s]);
+        
     }
-     
-     
+     constraints.end();
+    
+    
+    
     /*creation of E and e from pi*/
     IloExpr e(env); 
-    for( int i = 0; i < s; i++){
+    for( int i = 0; i < S; i++){
       for(int k = 0; k < n; k++ )
 	e += p.probaVector()[i] * pi[i][k] * D;         
     }
      
      
     IloExpr E(env);
-    for( int i = 0; i < s; i++){
+    for( int i = 0; i < S; i++){
       for(int k = 0; k < n; k++ ){
 	E += p.probaVector()[i] * pi[i][k] * p.durationScenarTask()[i][k];                
       }
@@ -128,6 +141,7 @@ IloExpr SubProb::solve(Parser &p){
      
     /*cut creation*/
     IloExpr cut(env);
+
     for(int k = 0; k < n; k++ ){
       cut = e - E*x[k];
     }
@@ -135,6 +149,7 @@ IloExpr SubProb::solve(Parser &p){
   }catch (IloException& e) {
     cerr << "ERROR : " << e << "\n";
   }
-  return NULL;
+  env.end();
+  return NULL; //return an iloRangeArray which is the cut
 }
 
