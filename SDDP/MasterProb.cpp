@@ -22,8 +22,16 @@ IloExpr MasterProb::obj() {
     return _obj;
 }
 
+/*
 SubProb MasterProb::sub() {
     return _sub;
+}*/
+MasterProb::x(){
+    return _x;
+}
+
+MasterProb::theta(){
+    return _theta;
 }
 
 /**
@@ -39,9 +47,8 @@ void MasterProb::solve(Parser &p) {
         IloModel model(env);
         IloArray<IloNumVar> x(env, p.nbCommands());
 
-        //Itialiaze subprob
+        //Initialize MasterProb
         sub(env);
-        
         
         for (int i = 0; i < p.nbCommands(); i++) {
             x[i] = IloNumVar(env, 0, 1, ILOBOOL);
@@ -50,20 +57,33 @@ void MasterProb::solve(Parser &p) {
         IloNumVar theta(env, -IloInfinity, 0, ILOINT);
 
         IloExpr eObj(env);
+
         for (int i = 0; i < p.nbCommands(); i++) {
             eObj += (p.benefVector()[i] * x[i]);
         }
+
         IloObjective obj(env, eObj, IloObjective::Maximize, "OBJ");
         model.add(obj);
         
         /*Contraintes initiales
          =>Y'en a pas*/
-        
+
         /*For an iteration v (as in the book)*/
         int v = 0;
-        while(/*(Pas de nvelles coupes) ou (zSup - zInf > eps) ou (pas d'amélioration de zSup significative)*/){
-            
-            v++;
+        IloExpr newConstraint(env);
+        while(/*(Pas de nvelles coupes) ou (zSup - zInf > eps) ou (pas d'amélioration de zSup significative)*/ ){
+            IloCplex cplexMaster(model);
+            cplexMaster.solve();
+
+            cplexMaster.getValues(_x,x);
+            cplexMaster.getValues(_theta,theta);
+
+            SubProblem *subProb = new SubProb(env,_x,_theta);
+            newConstraint = subProb->solve(p,x);
+            if(newConstraint)
+                model.add(theta<=newConstraint);
+            else
+                break;
         }
 
         /*solve the determinwist program x and theta are the optimal solution*/

@@ -20,16 +20,19 @@ public:
     MasterProb(const MasterProb& orig);
     virtual ~MasterProb();
     
-    SubProb sub();
+//    SubProb sub();
     IloExpr obj();
     void solve(Parser &p);  
-private:
-    SubProb _sub;
-    IloExpr _obj;
-    
-    
 
-    
+    IloNumArray x();
+    IloNum theta();
+
+private:
+//    SubProb _sub;
+    IloExpr _obj;
+    IloNumArray _x;
+    IloNum _theta;
+
 };
 
 #endif	/* MASTERPROB_H */
