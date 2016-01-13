@@ -10,6 +10,7 @@
 
 #include "ilcplex/ilocplex.h"
 #include "Parser.h"
+#include "Determinist.h"
 
 ILOSTLBEGIN
         
@@ -24,6 +25,9 @@ int main(int argc, char** argv) {
     Parser* p = new Parser("./../Instances/data_O5/OA_O5_S3_L0.2_B10_R5_0.txt");
     cout << "Parsing done\n";
     p->printParser();
+    Determinist * det = new Determinist();
+    det->solve(*p);
+
     env.end();
     
     return 0;

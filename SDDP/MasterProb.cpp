@@ -66,7 +66,7 @@ void MasterProb::solve(Parser &p) {
             v++;
         }
 
-        /*solve the determinist program x and theta are the optimal solution*/
+        /*solve the determinwist program x and theta are the optimal solution*/
 
         /*check the validity*/
 
