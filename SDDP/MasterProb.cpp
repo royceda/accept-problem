@@ -7,18 +7,18 @@
 
 #include "MasterProb.h"
 
-ILOSTLBEGIN
+ ILOSTLBEGIN
 
-MasterProb::MasterProb() {
-}
+ MasterProb::MasterProb() {
+ }
 
-MasterProb::MasterProb(const MasterProb& orig) {
-}
+ MasterProb::MasterProb(const MasterProb& orig) {
+ }
 
-MasterProb::~MasterProb() {
-}
+ MasterProb::~MasterProb() {
+ }
 
-IloExpr MasterProb::obj() {
+ IloExpr MasterProb::obj() {
     return _obj;
 }
 
@@ -26,19 +26,19 @@ IloExpr MasterProb::obj() {
 SubProb MasterProb::sub() {
     return _sub;
 }*/
-MasterProb::x(){
-    return _x;
-}
+    MasterProb::x(){
+        return _x;
+    }
 
-MasterProb::theta(){
-    return _theta;
-}
+    MasterProb::theta(){
+        return _theta;
+    }
 
 /**
  * 
  * @param p
  */
-void MasterProb::solve(Parser &p) {
+ void MasterProb::solve(Parser &p) {
 
     /*Define the master program from parser*/
 
@@ -82,16 +82,24 @@ void MasterProb::solve(Parser &p) {
             SubProb *subProb = new SubProb(env,_x,_theta,p);
             newOrNot = subProb->solve(p,x);
             if(newOrNot == 0){ //Feasible Cut
-                newConstraint += ;
+                for(int i =0; i<n; i++){
+                    newConstraint += subProb->getD()[i]*x[i];
+                }
+                newConstraint += subProb->getd();
                 model.add(theta<=newConstraint);
             }
+            
             else if(newOrNot==1){ //Optimal Cut
-                newConstraint +=;
-                model.add();
+                for(int i =0; i<n; i++){
+                    newConstraint += subProb->getE()[i]*x[i];
+                }
+                newConstraint += subProb->gete();
+                model.add(theta<=newConstraint);
             }
-            else if(newOrNot == 2)
-                break;
-        }
+        
+        else if(newOrNot == 2)
+            break;
+    }
 
         /*solve the determinwist program x and theta are the optimal solution*/
 
@@ -104,8 +112,8 @@ void MasterProb::solve(Parser &p) {
 
         /*add optimality cut El*x + theta > el*/
         //model.add(theta <= cut);
-    } catch (IloException& e) {
-        cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";
-    }
+} catch (IloException& e) {
+    cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";
+}
 
 }
