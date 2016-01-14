@@ -28,7 +28,7 @@ public:
   virtual ~SubProb();
 
   IloExpr solve(Parser &p, IloArray<IloNumVar> x);
-  IloExpr optimalCut(IloArray<IloNumVar> x); //TODO
+  IloExpr optimalCut(IloArray<IloNumVar> x); 
   IloExpr feasibleCut(IloArray<IloNumVar> x); //TODO
 
   IloNumArray getE();
@@ -37,7 +37,6 @@ public:
 
 protected:
   bool K2Test(); //TODO
-
   void initScenario();
   bool optimTest();
 

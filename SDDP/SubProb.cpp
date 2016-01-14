@@ -32,7 +32,7 @@ _theta(theta), D(p.capacity()), n(p.nbCommands()), S(p.nbScenario()), y(env, S),
 primal(env, S), pi(env, S), constraints(env), d(p.durationScenarTask()),
 proba(p.probaVector()), sub(p.subTreatedCost()){
   /*initilization for each scenario*/
-  for (unsigned int i = 0; i < S; i++) {
+  for (int i = 0; i < S; i++) {
     y[i]      = IloNumVarArray(env, S, 0, 1, ILOBOOL);
     pi[i]     = IloNumArray(env, 2*n); //car 2n contrainte
     primal[i] = IloNumArray(env, n);
@@ -47,10 +47,10 @@ bool SubProb::K2Test(){
 
 
 bool SubProb::optimTest(){
-  IloNum w;
-  IloNum a;
+  IloNum w(0);
+  IloNum a(0);
 
-  for(unsigned int i=0; i<n; i++){
+  for(int i=0; i<n; i++){
     a += _E[i] * _x[i];
   }
 
@@ -69,10 +69,10 @@ void SubProb::initScenario(){
     /*step 3*/
     /*Definition of S subProblems for each scenario*/
     #pragma omp parrallel for
-    for(unsigned int s = 0; s < S; s++){
+    for(int s = 0; s < S; s++){
       /*Objective*/
       IloExpr e0(env);
-      for(unsigned int i = 0; i<n; i++){
+      for(int i = 0; i<n; i++){
         e0 += y[i][s] * sub[i]; ;
       }
       IloObjective obj(env, e0, IloObjective::Maximize, "OBJ");
@@ -81,8 +81,8 @@ void SubProb::initScenario(){
 
       IloExpr e1(env);
 
-      for (unsigned int j = 0; j < n; j++) { // first part: n constraints
-        for (unsigned int i = 0; i < n; i++) { // matrix prod
+      for (int j = 0; j < n; j++) { // first part: n constraints
+        for (int i = 0; i < n; i++) { // matrix prod
           e1 += d[i][s] * (_x[i] - y[i][s]); //d is vector of demands
         }
         constraints[s].add(e1 <= D); // D is the total duration
@@ -90,7 +90,7 @@ void SubProb::initScenario(){
       }
 
       #pragma omp parrallel for
-      for (unsigned int i = 0; i < n; i++) { //second part: n constraints
+      for (int i = 0; i < n; i++) { //second part: n constraints
         IloExpr tmp(env);
         tmp = y[i][s];
 
@@ -101,7 +101,7 @@ void SubProb::initScenario(){
     }
 
 
-    for(unsigned int s = 0; s < S; s++){
+    for(int s = 0; s < S; s++){
       IloCplex cplex(model[s]);
       cplex.getValues(primal[s], y[s]);
       cplex.getDuals(pi[s], constraints[s]);
@@ -115,12 +115,10 @@ void SubProb::initScenario(){
 
 IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
 
-
-
   /*creation of E and e from pi*/
-  for(unsigned int k = 0; k < S; k++){
+  for(int k = 0; k < S; k++){
     IloNum pid(0);
-    for(unsigned int i = 0; i < n; i++){ //vector prod
+    for(int i = 0; i < n; i++){ //vector prod
       pid += pi[k][i] * D;
     }
     _e += proba[k] * pid ;
@@ -129,17 +127,17 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
 
 
   //il y a 2n var dual car 2n contrainte
-  for(unsigned int i = 0; i < n; i++){
+  for(int i = 0; i < n; i++){
     IloNumArray pit(0);
-    for(unsigned int j = 0; j < n; j++){//matrix prod part 1
+    for(int j = 0; j < n; j++){//matrix prod part 1
       pit[i] +=  pi[i][j] * d[j][i];
     }
 
-    for(unsigned int j = n; j < 2*n; j++){//matrix prod part2
+    for(int j = n; j < 2*n; j++){//matrix prod part2
       pit[i] +=  pi[i][j] * 1; //row x col2
     }
 
-    for(unsigned int k = 0; k < S; k++){//sum with k n part 1
+    for(int k = 0; k < S; k++){//sum with k n part 1
       _E[i] += proba[k] * pit[k] ;
     }
 
@@ -149,7 +147,7 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
   /*cut creation*/
   IloExpr cut(env);
 
-  for(unsigned int k = 0; k < n; k++ ){
+  for(int k = 0; k < n; k++ ){
     cut = _e - _E[k]*x[k];
   }
 
