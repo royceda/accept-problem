@@ -11,6 +11,7 @@
 #include "ilcplex/ilocplex.h"
 #include "Parser.h"
 #include "Determinist.h"
+#include "MasterProb.h"
 
 ILOSTLBEGIN
         
@@ -27,6 +28,9 @@ int main(int argc, char** argv) {
     p->printParser();
     Determinist * det = new Determinist();
     det->solve(*p);
+
+    MasterProb* MP = new MasterProb();
+    MP->solve(*p);
 
     env.end();
     

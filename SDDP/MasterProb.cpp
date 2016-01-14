@@ -42,7 +42,7 @@ void MasterProb::solve(Parser &p) {
 
     /*Define the master program from parser*/
 
-    IloEnv env();
+    IloEnv env;
     try {
         IloModel model(env);
         IloArray<IloNumVar> x(env, p.nbCommands());
@@ -70,17 +70,18 @@ void MasterProb::solve(Parser &p) {
 
         /*For an iteration v (as in the book)*/
         int v = 0;
-        IloExpr newConstraint(env);
-        while(/*(Pas de nvelles coupes) ou (zSup - zInf > eps) ou (pas d'amélioration de zSup significative)*/ ){
+        IloRangeArray newConstraint(env);
+        IloExpr eNull(env);
+        while(1){
             IloCplex cplexMaster(model);
             cplexMaster.solve();
 
             cplexMaster.getValues(_x,x);
             cplexMaster.getValues(_theta,theta);
 
-            SubProblem *subProb = new SubProb(env,_x,_theta);
+            SubProb *subProb = new SubProb(env,_x,_theta,p);
             newConstraint = subProb->solve(p,x);
-            if(newConstraint)
+            if(newConstraint != eNull)
                 model.add(theta<=newConstraint);
             else
                 break;
@@ -93,10 +94,10 @@ void MasterProb::solve(Parser &p) {
         /*for each scenario*/
         /*Solve the sub porblem (primal and dual) (w & pi)*/
 
-        IloExpr cut = sub().solve(*env);
+        //IloExpr cut = sub().solve(*env);
 
         /*add optimality cut El*x + theta > el*/
-        model.add(theta <= cut);
+        //model.add(theta <= cut);
     } catch (IloException& e) {
         cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";
     }
