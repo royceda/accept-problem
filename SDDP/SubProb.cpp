@@ -41,7 +41,7 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
 }
 
 bool SubProb::K2Test(){
-  //h-Tx >= 0 de n a 2n <= 0 de 0 a n
+  //it exists an y >= 0 ???
   for(int s = 0; s <S; s++){
     int sum1 = 0;
     for( int  i = 0; i<n; i++){
@@ -75,33 +75,35 @@ IloExpr SubProb::feasibleCut(IloArray<IloNumVar> theta){
 
 /*
   //il y a 2n var dual car 2n contrainte
-  for(int i = 0; i < n; i++){
+  for(int i = 0; i < S; i++){
     IloNumArray pit(0);
-    for(int j = 0; j < S; j++){//matrix prod part 1
-      pit[i] +=  _theta * d[j][i];
+    for(int j = 0; j < n; j++){//matrix prod part 1
+      pit[i] +=  d[i][j] * _theta;
     }
 
-    for(int j = n; j < 2*n; j++){//matrix prod part2
+    for(int j = 0; j < n; j++){//matrix prod part2
       pit[i] +=  _theta * 1; //row x col2
-    }
-
-    for(int k = 0; k < S; k++){//sum with k n part 1
-      _D[i] += proba[k] * pit[k] ;
     }
     pit = 0;
   }
 
-  //cut creation
-  IloExpr cut(env);
+    for(int k = 0; k < S; k++){//sum with k n part 1
+      _D[i] += proba[k] * pit[k] ;
+    }
 
-  for(int k = 0; k < n; k++ ){
-    cut += _D[k] * theta ;
-  }
 
-  cut += -_d; //>= 0
-  return cut;*/
+
+    //cut creation
+    IloExpr cut(env);
+
+    for(int k = 0; k < n; k++ ){
+      cut += _D[k] * theta ;
+    }
+
+    cut += -_d; //>= 0
+    return cut;*/
   return NULL;
-}
+  }
 
 
 
@@ -186,7 +188,7 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
 
 
   //il y a 2n var dual car 2n contrainte
-  for(int i = 0; i < n; i++){
+  for(int i = 0; i < S; i++){
     IloNumArray pit(0);
     for(int j = 0; j < n; j++){//matrix prod part 1
       pit[i] +=  pi[i][j] * d[j][i];
