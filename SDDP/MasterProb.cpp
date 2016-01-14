@@ -82,7 +82,7 @@ SubProb MasterProb::sub() {
             SubProb *subProb = new SubProb(env,_x,_theta,p);
             newOrNot = subProb->solve(p,x);
             if(newOrNot == 0){ //Feasible Cut
-                for(int i =0; i<n; i++){
+                for(int i =0; i<p.nbCommands(); i++){
                     newConstraint += subProb->getD()[i]*x[i];
                 }
                 newConstraint += subProb->getd();
@@ -90,7 +90,7 @@ SubProb MasterProb::sub() {
             }
             
             else if(newOrNot==1){ //Optimal Cut
-                for(int i =0; i<n; i++){
+                for(int i =0; i<p.nbCommands(); i++){
                     newConstraint += subProb->getE()[i]*x[i];
                 }
                 newConstraint += subProb->gete();
