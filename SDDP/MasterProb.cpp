@@ -79,6 +79,7 @@ SubProb MasterProb::sub() {
         /*For an iteration v (as in the book)*/
         int v = 0;
         IloExpr newConstraint(env);
+        IloRangeArray lazy;
         bool newOrNot;
         int count = 0;
         while(count < 100){
@@ -110,8 +111,10 @@ SubProb MasterProb::sub() {
                 }
                 newConstraint += subProb->gete();
                 IloNumVar theta(env, -IloInfinity, 0, ILOINT);
-                model.add(theta<=newConstraint);
-                cout<<"NEW CUT ADDED"<<newConstraint<<"\n";
+                lazy.add(newConstraint >= theta);
+                cplexMaster.addLazyConstraints (lazy);
+                cplexMaster.LazyConstraintCallback();
+                cout<<"NEW CUT ADDED"<<theta<<" <= "<<newConstraint<<"\n";
             }
 
             else    
