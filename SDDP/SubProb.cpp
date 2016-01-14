@@ -27,6 +27,17 @@ IloNum SubProb::gete(){
 }
 
 
+IloNumArray SubProb::getD(){
+  return _D;
+}
+
+IloNum SubProb::getd(){
+  return _d;
+}
+
+
+
+
 SubProb::SubProb(IloEnv &env1, IloNumArray x, IloNum theta, Parser &p):env(env1), _x(x),
 _theta(theta), D(p.capacity()), n(p.nbCommands()), S(p.nbScenario()), y(env, S), _e(0),
 primal(env, S), pi(env, S), constraints(env), d(p.durationScenarTask()),
@@ -61,7 +72,7 @@ bool SubProb::K2Test(){
 }
 
 
-IloExpr SubProb::feasibleCut(IloArray<IloNumVar> theta){
+void SubProb::feasibleCut(){
 
   //creation of D and d from theta
   for(int k = 0; k < S; k++){
@@ -73,36 +84,37 @@ IloExpr SubProb::feasibleCut(IloArray<IloNumVar> theta){
     pid = 0;
   }
 
-/*
+
   //il y a 2n var dual car 2n contrainte
   for(int i = 0; i < S; i++){
     IloNumArray pit(0);
     for(int j = 0; j < n; j++){//matrix prod part 1
       pit[i] +=  d[i][j] * _theta;
     }
-
+    
     for(int j = 0; j < n; j++){//matrix prod part2
       pit[i] +=  _theta * 1; //row x col2
     }
     pit = 0;
-  }
+    
 
     for(int k = 0; k < S; k++){//sum with k n part 1
       _D[i] += proba[k] * pit[k] ;
     }
-
+  }
 
 
     //cut creation
-    IloExpr cut(env);
+    /*oExpr cut(env);
 
     for(int k = 0; k < n; k++ ){
-      cut += _D[k] * theta ;
+      // cut += _D[k] * x[k] ;
     }
 
     cut += -_d; //>= 0
     return cut;*/
-  return NULL;
+    
+
   }
 
 
@@ -174,7 +186,7 @@ void SubProb::initScenario(){
 
 
 
-IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
+void SubProb::optimalCut(){
 
   /*creation of E and e from pi*/
   for(int k = 0; k < S; k++){
@@ -207,14 +219,14 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
   }
 
   /*cut creation*/
-  IloExpr cut(env);
+  /* IloExpr cut(env);
 
   for(int k = 0; k < n; k++ ){
     cut -=_E[k] * x[k];
   }
 
   cut += _e; //>= theta
-  return cut;
+  return cut;*/
 }
 
 
@@ -222,16 +234,18 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
  *
  * @return Generate the new cut from the sub problem
  */
-IloExpr SubProb::solve(Parser &p, IloArray<IloNumVar> x){
+int SubProb::solve(Parser &p, IloArray<IloNumVar> x){
   IloExpr cut(env);
-  if(K2Test()){
-    cut = feasibleCut(x);
-    return cut;
+  if(!K2Test()){
+    feasibleCut();
+    return 0;
   }
   else{
     initScenario();
-    cut = optimalCut(x);
-    return cut;
+    if(!optimTest()){
+      optimalCut();
+      return 1;
+    }
+    return 2;  
   }
-  return NULL;
 }

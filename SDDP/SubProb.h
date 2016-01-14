@@ -27,9 +27,13 @@ public:
   SubProb(const SubProb& orig);
   virtual ~SubProb();
 
-  IloExpr solve(Parser &p, IloArray<IloNumVar> x);
+  int solve(Parser &p, IloArray<IloNumVar> x);
 
-
+ 
+  IloNumArray getD();
+  IloNum getd();
+  
+  
   IloNumArray getE();
   IloNum gete();
 
@@ -38,8 +42,8 @@ protected:
   bool K2Test();
   void initScenario();
   bool optimTest();
-  IloExpr optimalCut(IloArray<IloNumVar> x);
-  IloExpr feasibleCut(IloArray<IloNumVar> theta); //TODO
+  void optimalCut();
+  void feasibleCut(); //TODO
 
 
 private:
