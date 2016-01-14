@@ -70,8 +70,8 @@ void MasterProb::solve(Parser &p) {
 
         /*For an iteration v (as in the book)*/
         int v = 0;
-        IloRangeArray newConstraint(env);
-        IloExpr eNull(env);
+        IloExpr newConstraint(env);
+        int newOrNot;
         while(1){
             IloCplex cplexMaster(model);
             cplexMaster.solve();
@@ -80,10 +80,16 @@ void MasterProb::solve(Parser &p) {
             cplexMaster.getValues(_theta,theta);
 
             SubProb *subProb = new SubProb(env,_x,_theta,p);
-            newConstraint = subProb->solve(p,x);
-            if(newConstraint != eNull)
+            newOrNot = subProb->solve(p,x);
+            if(newOrNot == 0){ //Feasible Cut
+                newConstraint += ;
                 model.add(theta<=newConstraint);
-            else
+            }
+            else if(newOrNot==1){ //Optimal Cut
+                newConstraint +=;
+                model.add();
+            }
+            else if(newOrNot == 2)
                 break;
         }
 
