@@ -86,7 +86,7 @@ bool SubProb::K2Test(){
 
 
 void SubProb::feasibleCut(){
-
+  cout << "IN FEASIBLE CUT\n";
   //creation of D and d from theta
   for(int k = 0; k < S; k++){
     IloNum pid(0);
@@ -97,7 +97,7 @@ void SubProb::feasibleCut(){
     pid = 0;
   }
 
-
+  cout << "AFTER 1\n";
   //il y a 2n var dual car 2n contrainte
   for(int i = 0; i < S; i++){
     IloNumArray pit(0);
