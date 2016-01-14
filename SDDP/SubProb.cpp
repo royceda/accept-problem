@@ -39,7 +39,7 @@ IloNum SubProb::getd(){
 
 
 SubProb::SubProb(IloEnv &env1, IloNumArray x, IloNum theta, Parser &p):env(env1), _x(x),
-_theta(theta), D(p.capacity()), n(p.nbCommands()), S(p.nbScenario()), _e(0), constraints(env), d(p.durationScenarTask()),
+_theta(theta), D(p.capacity()), n(p.nbCommands()), S(p.nbScenario()), _e(0), d(p.durationScenarTask()),
 proba(p.probaVector()), sub(p.subTreatedCost()){
 
 
@@ -50,10 +50,13 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
   pi = pitmp;
   IloArray<IloNumArray> primaltmp(env,S);
   primal = primaltmp;
+  IloArray<IloRangeArray> constraintsTmp(env,S);
+  constraints = constraintsTmp;
+
   /*initilization for each scenario*/
   for (int i = 0; i < S; i++) {
     cout<<i<<"\n";
-    y[i]      = IloNumVarArray(env, n, 0, 1, ILOBOOL);
+    y[i]      = IloNumVarArray(env, n, 0, 1, ILOFLOAT);
     cout<<"y done\n";
     pi[i]     = IloNumArray(env, 2*n); //car 2n contrainte
     cout<<"pi done\n";
@@ -61,6 +64,7 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
     cout<<"primal done\n";
     model.push_back(IloModel(env));
     cout << "endOf "<<i<<"\n";
+    constraints[i] = IloRangeArray(env);
   }
 }
 
@@ -124,15 +128,22 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
     IloNum w(0);
     IloNum a(0);
 
+    IloNumArray tmpE(env,n);
+    _E = tmpE;
+
     for(int i=0; i<n; i++){
       a += _E[i] * _x[i];
     }
 
+    cout << "for done\n";
+
     w = a - _e;
 
     if( _theta >= w){
+      cout<<"OPTIM TEST = TRUE\n";
       return true;
     }else{
+      cout<<"OPTIM TEST = FALSE\n";
       return false;
     }
   }
@@ -147,39 +158,33 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
       /*Objective*/
         IloExpr e0(env);
         for(int i = 0; i<n; i++){
-          e0 += y[i][s] * sub[i]; ;
+          e0 += y[s][i] * sub[i];
         }
+
         IloObjective obj(env, e0, IloObjective::Maximize, "OBJ");
+        e0.end();
         model[s].add(obj);
 
-
         IloExpr e1(env);
-
-      for (int j = 0; j < n; j++) { // first part: n constraints
         for (int i = 0; i < n; i++) { // matrix prod
-          e1 += d[i][s] * (_x[i] - y[i][s]); //d is vector of demands
+          e1 += d[i][s] * (_x[i] - y[s][i]); //d is vector of demands
         }
+
         constraints[s].add(e1 <= D); // D is the total duration
         e1.end();
-      }
 
       #pragma omp parrallel for
       for (int i = 0; i < n; i++) { //second part: n constraints
-        IloExpr tmp(env);
-        tmp = y[i][s];
-
-        constraints[s].add(y[i][s] <= _x[i]); // [order][scenar]
-        tmp.end();
+        constraints[s].add(y[s][i] <= _x[i]); // [order][scenar]
       }
       model[s].add(constraints[s]);
-    }
-
-
-    for(int s = 0; s < S; s++){
       IloCplex cplex(model[s]);
+      cplex.solve();
       cplex.getValues(primal[s], y[s]);
-      cplex.getDuals(pi[s], constraints[s]);
+      //cplex.getDuals(pi[s], constraints[s]);
+      cplex.end();
     }
+
   }catch (IloException& e) {
     cerr << "ERROR : " << e << "\n";
   }

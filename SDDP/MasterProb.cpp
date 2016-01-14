@@ -26,11 +26,11 @@
 SubProb MasterProb::sub() {
     return _sub;
 }*/
- IloNumArray   MasterProb::x(){
+    IloNumArray   MasterProb::x(){
         return _x;
     }
 
-IloNum  MasterProb::theta(){
+    IloNum  MasterProb::theta(){
         return _theta;
     }
 
@@ -66,7 +66,7 @@ IloNum  MasterProb::theta(){
 
         IloObjective obj(env, eObj, IloObjective::Maximize, "OBJ");
         model.add(obj);
-                cout<<"OKLM 2\n";
+        cout<<"OKLM 2\n";
         /*Contraintes initiales
          =>Y'en a pas*/
 
@@ -78,13 +78,17 @@ IloNum  MasterProb::theta(){
         while(count < 100){
             IloCplex cplexMaster(model);
             cplexMaster.solve();
-cout<<"OKLM 1\n";
 
-        IloNumArray _x(env, p.nbCommands());
-        cplexMaster.getValues(_x,x);
-        cout<<"OKLM 2\n";
-        _theta = cplexMaster.getValue(theta);
-cout<<"OKLM 1\n";
+
+            cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
+            for (int i = 0; i < p.nbCommands(); i++) {
+                cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
+            }
+
+
+            IloNumArray _x(env, p.nbCommands());
+            cplexMaster.getValues(_x,x);
+            _theta = cplexMaster.getValue(theta);
             SubProb *subProb = new SubProb(env,_x,_theta,p);
             cout<<"readyToSolve\n";
             newOrNot = subProb->solve(p,x);
@@ -97,26 +101,28 @@ cout<<"OKLM 1\n";
             // }
             
             if(newOrNot){ //Optimal Cut
+                cout << "NEW CUT TO ADD\n";
                 for(int i =0; i<p.nbCommands(); i++){
                     newConstraint += subProb->getE()[i]*x[i];
                 }
                 newConstraint += subProb->gete();
                 model.add(theta<=newConstraint);
             }
-        
-        else    
-            break;
-        count ++;
-                cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
-    }
+
+            else    
+                break;
+            count ++;
+            cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
+            for (int i = 0; i < p.nbCommands(); i++) {
+                cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
+            }
+        }
         cout<<"OKLM 3\n";
 
 
 
-
-
-} catch (IloException& e) {
-    cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";
-}
+    } catch (IloException& e) {
+        cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";
+    }
 
 }
