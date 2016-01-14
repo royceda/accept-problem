@@ -7,13 +7,13 @@
 
 #include "SubProb.h"
 
-SubProb::SubProb() {}
+ SubProb::SubProb() {}
 
-SubProb::SubProb(IloEnv &env1): env(env1) {}
+ SubProb::SubProb(IloEnv &env1): env(env1) {}
 
-SubProb::SubProb(const SubProb& orig) {}
+ SubProb::SubProb(const SubProb& orig) {}
 
-SubProb::~SubProb() {
+ SubProb::~SubProb() {
   constraints.end();
   model.end();
 }
@@ -48,7 +48,7 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
   y = ytmp;
   IloArray<IloNumArray> pitmp(env,S);
   pi = pitmp;
-    IloArray<IloNumArray> primaltmp(env,S);
+  IloArray<IloNumArray> primaltmp(env,S);
   primal = primaltmp;
   /*initilization for each scenario*/
   for (int i = 0; i < S; i++) {
@@ -64,108 +64,96 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
   }
 }
 
-bool SubProb::K2Test(){
-  //it exists an y >= 0 ???
-  for(int s = 0; s <S; s++){
-    int sum1 = 0;
-    for( int  i = 0; i<n; i++){
-      sum1 +=  d[s][i] * _x[i];
+// bool SubProb::K2Test(){
+//   //it exists an y >= 0 ???
+//   for(int s = 0; s <S; s++){
+//     double sum1 = 0;
+//     for( int  i = 0; i<n; i++){
+//       sum1 +=  d[s][i] * (_x[i] - y[s][i]);
+//     }
+//     if(sum1 > D){
+//       return false;
+//     }
+
+//   }
+//   for(int i = 0; i < n; i++){
+//     if(_x[i] < 0){
+//       return false;
+//     }
+//   }
+//   return true;
+// }
+
+
+// void SubProb::feasibleCut(){
+//   cout << "IN FEASIBLE CUT\n";
+//   //creation of D and d from theta
+//   for(int k = 0; k < S; k++){
+//     IloNum pid(0);
+//     for(int i = 0; i < n; i++){ //vector prod
+//       pid += _theta * D;
+//     }
+//     _d += pid;
+//     pid = 0;
+//   }
+
+//   cout << "AFTER 1\n";
+//   //il y a 2n var dual car 2n contrainte
+
+//   IloNumArray pit(env,n,0,IloInfinity, ILOINT);
+//     for(int j = 0; j < n; j++){//matrix prod part 1
+//       pit[i] +=  d[i][j] * _theta;
+//     }
+//     cout<<"AFTER2\n";
+//     for(int j = 0; j < n; j++){//matrix prod part2
+//       pit[i] +=  _theta * 1; //row x col2
+//     }
+//     pit = 0;
+//     cout<<"AFTER2\n";
+
+//     for(int k = 0; k < S; k++){//sum with k n part 1
+//       _D[i] += proba[k] * pit[k] ;
+//     }
+
+//     cout<<"AFTER2\n";
+//   }
+
+
+
+  bool SubProb::optimTest(){
+    IloNum w(0);
+    IloNum a(0);
+
+    for(int i=0; i<n; i++){
+      a += _E[i] * _x[i];
     }
 
-    if(sum1 > D){
+    w = a - _e;
+
+    if( _theta >= w){
+      return true;
+    }else{
       return false;
     }
   }
-  for(int i = 0; i < n; i++){
-    if(_x[i] < 0){
-      return false;
-    }
-  }
-  return true;
-}
 
 
-void SubProb::feasibleCut(){
-  cout << "IN FEASIBLE CUT\n";
-  //creation of D and d from theta
-  for(int k = 0; k < S; k++){
-    IloNum pid(0);
-    for(int i = 0; i < n; i++){ //vector prod
-      pid += _theta * D;
-    }
-    _d += pid;
-    pid = 0;
-  }
-
-  cout << "AFTER 1\n";
-  //il y a 2n var dual car 2n contrainte
-  for(int i = 0; i < S; i++){
-    IloNumArray pit(0);
-    for(int j = 0; j < n; j++){//matrix prod part 1
-      pit[i] +=  d[i][j] * _theta;
-    }
-    
-    for(int j = 0; j < n; j++){//matrix prod part2
-      pit[i] +=  _theta * 1; //row x col2
-    }
-    pit = 0;
-    
-
-    for(int k = 0; k < S; k++){//sum with k n part 1
-      _D[i] += proba[k] * pit[k] ;
-    }
-  }
-
-
-    //cut creation
-    /*oExpr cut(env);
-
-    for(int k = 0; k < n; k++ ){
-      // cut += _D[k] * x[k] ;
-    }
-
-    cut += -_d; //>= 0
-    return cut;*/
-    
-
-  }
-
-
-
-bool SubProb::optimTest(){
-  IloNum w(0);
-  IloNum a(0);
-
-  for(int i=0; i<n; i++){
-    a += _E[i] * _x[i];
-  }
-
-  w = a - _e;
-
-  if( _theta >= w){
-    return true;
-  }else{
-    return false;
-  }
-}
-
-
-void SubProb::initScenario(){
-  try{
+  void SubProb::initScenario(){
+    try{
     /*step 3*/
     /*Definition of S subProblems for each scenario*/
     #pragma omp parrallel for
-    for(int s = 0; s < S; s++){
+      for(int s = 0; s < S; s++){
       /*Objective*/
-      IloExpr e0(env);
-      for(int i = 0; i<n; i++){
-        e0 += y[i][s] * sub[i]; ;
-      }
-      IloObjective obj(env, e0, IloObjective::Maximize, "OBJ");
-      model[s].add(obj);
+        IloExpr e0(env);
+        for(int i = 0; i<n; i++){
+          e0 += y[i][s] * sub[i]; ;
+        }
+        IloObjective obj(env, e0, IloObjective::Maximize, "OBJ");
+        model[s].add(obj);
 
 
-      IloExpr e1(env);
+        IloExpr e1(env);
 
       for (int j = 0; j < n; j++) { // first part: n constraints
         for (int i = 0; i < n; i++) { // matrix prod
@@ -247,21 +235,21 @@ void SubProb::optimalCut(){
  *
  * @return Generate the new cut from the sub problem
  */
-int SubProb::solve(Parser &p, IloNumVarArray x){
+bool SubProb::solve(Parser &p, IloNumVarArray x){
   IloExpr cut(env);
-      cout<<"!K2Test\n";
-  if(!K2Test()){
-    cout<<"!K2Test\n";
-    feasibleCut();
-    return 0;
-  }
-  else{
-    initScenario();
+  // if(!K2Test()){ //Recours complet donc forcément dans K2
+  //   cout<<"!K2Test\n";
+  //   feasibleCut();
+  //   return 0;
+  // }
+
+    initScenario(); //Traitement des sous problèmes
+    cout << "inti donnennnne\n";
     if(!optimTest()){
       cout<<"!optimTest\n";
       optimalCut();
-      return 1;
+      return true;
     }
-    return 2;  
+    return false;  
+
   }
-}

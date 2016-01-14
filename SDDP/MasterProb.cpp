@@ -73,7 +73,7 @@ IloNum  MasterProb::theta(){
         /*For an iteration v (as in the book)*/
         int v = 0;
         IloExpr newConstraint(env);
-        int newOrNot;
+        bool newOrNot;
         int count = 0;
         while(count < 100){
             IloCplex cplexMaster(model);
@@ -88,15 +88,15 @@ cout<<"OKLM 1\n";
             SubProb *subProb = new SubProb(env,_x,_theta,p);
             cout<<"readyToSolve\n";
             newOrNot = subProb->solve(p,x);
-            if(newOrNot == 0){ //Feasible Cut
-                for(int i =0; i<p.nbCommands(); i++){
-                    newConstraint += subProb->getD()[i]*x[i];
-                }
-                newConstraint += subProb->getd();
-                model.add(theta<=newConstraint);
-            }
+            // if(newOrNot == 0){ //Feasible Cut       //Always in K2 because of a complete recours
+            //     for(int i =0; i<p.nbCommands(); i++){
+            //         newConstraint += subProb->getD()[i]*x[i];
+            //     }
+            //     newConstraint += subProb->getd();
+            //     model.add(theta<=newConstraint);
+            // }
             
-            else if(newOrNot==1){ //Optimal Cut
+            if(newOrNot){ //Optimal Cut
                 for(int i =0; i<p.nbCommands(); i++){
                     newConstraint += subProb->getE()[i]*x[i];
                 }
@@ -104,7 +104,7 @@ cout<<"OKLM 1\n";
                 model.add(theta<=newConstraint);
             }
         
-        else if(newOrNot == 2)
+        else    
             break;
         count ++;
                 cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";

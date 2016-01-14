@@ -27,7 +27,7 @@ public:
   SubProb(const SubProb& orig);
   virtual ~SubProb();
 
-  int solve(Parser &p, IloNumVarArray x);
+  bool solve(Parser &p, IloNumVarArray x);
 
  
   IloNumArray getD();
