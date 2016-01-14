@@ -234,7 +234,7 @@ void SubProb::optimalCut(){
  *
  * @return Generate the new cut from the sub problem
  */
-int SubProb::solve(Parser &p, IloArray<IloNumVar> x){
+int SubProb::solve(Parser &p, IloNumVarArray x){
   IloExpr cut(env);
   if(!K2Test()){
     feasibleCut();

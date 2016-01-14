@@ -26,11 +26,11 @@
 SubProb MasterProb::sub() {
     return _sub;
 }*/
-    MasterProb::x(){
+ IloNumArray   MasterProb::x(){
         return _x;
     }
 
-    MasterProb::theta(){
+IloNum  MasterProb::theta(){
         return _theta;
     }
 
@@ -45,10 +45,10 @@ SubProb MasterProb::sub() {
     IloEnv env;
     try {
         IloModel model(env);
-        IloArray<IloNumVar> x(env, p.nbCommands());
+        IloNumVarArray x(env, p.nbCommands());
 
         //Initialize MasterProb
-        sub(env);
+        cout<<"OKLM 1\n";
         
         for (int i = 0; i < p.nbCommands(); i++) {
             x[i] = IloNumVar(env, 0, 1, ILOBOOL);
@@ -62,9 +62,11 @@ SubProb MasterProb::sub() {
             eObj += (p.benefVector()[i] * x[i]);
         }
 
+        eObj += theta;
+
         IloObjective obj(env, eObj, IloObjective::Maximize, "OBJ");
         model.add(obj);
-        
+                cout<<"OKLM 2\n";
         /*Contraintes initiales
          =>Y'en a pas*/
 
@@ -72,13 +74,17 @@ SubProb MasterProb::sub() {
         int v = 0;
         IloExpr newConstraint(env);
         int newOrNot;
-        while(1){
+        int count = 0;
+        while(count < 100){
             IloCplex cplexMaster(model);
             cplexMaster.solve();
+cout<<"OKLM 1\n";
 
-            cplexMaster.getValues(_x,x);
-            cplexMaster.getValues(_theta,theta);
-
+        IloNumArray _x(env, p.nbCommands());
+        cplexMaster.getValues(_x,x);
+        cout<<"OKLM 2\n";
+        _theta = cplexMaster.getValue(theta);
+cout<<"OKLM 1\n";
             SubProb *subProb = new SubProb(env,_x,_theta,p);
             newOrNot = subProb->solve(p,x);
             if(newOrNot == 0){ //Feasible Cut
@@ -99,19 +105,15 @@ SubProb MasterProb::sub() {
         
         else if(newOrNot == 2)
             break;
+        count ++;
+                cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
     }
+        cout<<"OKLM 3\n";
 
-        /*solve the determinwist program x and theta are the optimal solution*/
 
-        /*check the validity*/
 
-        /*for each scenario*/
-        /*Solve the sub porblem (primal and dual) (w & pi)*/
 
-        //IloExpr cut = sub().solve(*env);
 
-        /*add optimality cut El*x + theta > el*/
-        //model.add(theta <= cut);
 } catch (IloException& e) {
     cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";
 }
