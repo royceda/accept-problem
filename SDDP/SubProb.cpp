@@ -44,6 +44,8 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
 
 
 //  IloEnv env(env1);
+  IloNumArray tmpE(env,n);
+  _E = tmpE;
   IloArray<IloNumVarArray> ytmp(env, S);
   y = ytmp;
   IloArray<IloNumArray> pitmp(env,S);
@@ -58,7 +60,7 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
     cout<<i<<"\n";
     y[i]      = IloNumVarArray(env, n, 0, 1, ILOFLOAT);
     cout<<"y done\n";
-    pi[i]     = IloNumArray(env, 2*n); //car 2n contrainte
+    pi[i]     = IloNumArray(env, n+1); //car 2n contrainte
     cout<<"pi done\n";
     primal[i] = IloNumArray(env, n);
     cout<<"primal done\n";
@@ -124,48 +126,44 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
 
 
 
-  bool SubProb::optimTest(){
-    IloNum w(0);
-    IloNum a(0);
+bool SubProb::optimTest(){
+  IloNum w(0);
+  IloNum a(0);
 
-    IloNumArray tmpE(env,n);
-    _E = tmpE;
 
-    for(int i=0; i<n; i++){
-      a += _E[i] * _x[i];
-    }
-
-    cout << "for done\n";
-
-    w = a - _e;
-
-    if( _theta >= w){
-      cout<<"OPTIM TEST = TRUE\n";
-      return true;
-    }else{
-      cout<<"OPTIM TEST = FALSE\n";
-      return false;
-    }
+  for(int i=0; i<n; i++){
+    a += _E[i] * _x[i];
   }
+  w = _e - a;
+  cout<<"w = "<<w<<"\n";
+  cout <<"theta = "<<_theta<<"\n";
+  if( _theta <= w){
+    cout<<"OPTIM TEST = TRUE\n";
+    return true;
+  }else{
+    cout<<"OPTIM TEST = FALSE\n";
+    return false;
+  }
+}
 
 
-  void SubProb::initScenario(){
-    try{
+void SubProb::initScenario(){
+  try{
     /*step 3*/
     /*Definition of S subProblems for each scenario*/
     #pragma omp parrallel for
-      for(int s = 0; s < S; s++){
+    for(int s = 0; s < S; s++){
       /*Objective*/
-        IloExpr e0(env);
-        for(int i = 0; i<n; i++){
-          e0 += y[s][i] * sub[i];
-        }
+      IloExpr e0(env);
+      for(int i = 0; i<n; i++){
+        e0 += y[s][i] * sub[i];
+      }
 
-        IloObjective obj(env, e0, IloObjective::Maximize, "OBJ");
-        e0.end();
-        model[s].add(obj);
+      IloObjective obj(env, -e0, IloObjective::Maximize, "OBJ");
+      e0.end();
+      model[s].add(obj);
 
-        IloExpr e1(env);
+      IloExpr e1(env);
         for (int i = 0; i < n; i++) { // matrix prod
           e1 += d[i][s] * (_x[i] - y[s][i]); //d is vector of demands
         }
@@ -181,8 +179,9 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
       IloCplex cplex(model[s]);
       cplex.solve();
       cplex.getValues(primal[s], y[s]);
-      //cplex.getDuals(pi[s], constraints[s]);
+      cplex.getDuals(pi[s], constraints[s]);
       cplex.end();
+      cout<<"pi = "<<pi<<"\n";
     }
 
   }catch (IloException& e) {
@@ -190,49 +189,36 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
   }
 }
 
-
-
 void SubProb::optimalCut(){
-
+  cout<<"IN OPtimal\n";
   /*creation of E and e from pi*/
   for(int k = 0; k < S; k++){
     IloNum pid(0);
-    for(int i = 0; i < n; i++){ //vector prod
-      pid += pi[k][i] * D;
+    pid += pi[k][0]*D;
+    for(int i = 1; i < n+1; i++){ //vector prod
+      pid += pi[k][i];
     }
     _e += proba[k] * pid ;
     pid = 0;
   }
-
-
+  cout<<"size pit : "<<pi.getSize()<<"\n";
+  cout<<"size pi[0] = "<<pi[0].getSize()<<"\n";
   //il y a 2n var dual car 2n contrainte
-  for(int i = 0; i < S; i++){
-    IloNumArray pit(0);
-    for(int j = 0; j < n; j++){//matrix prod part 1
-      pit[i] +=  pi[i][j] * d[j][i];
+  IloNumArray pit(env,n);
+
+  for(int i = 0; i < n; i++){
+    IloNum sum(0);
+    for(int j = 0; j<S; j++){
+      for(int ii = 1; ii<n+1; ii++){
+        sum -= pi[j][ii];
+      }
+      _E[i] += (d[i][j]*pi[j][0])*proba[j];
     }
-
-    for(int j = n; j < 2*n; j++){//matrix prod part2
-      pit[i] +=  pi[i][j] * 1; //row x col2
-    }
-
-    for(int k = 0; k < S; k++){//sum with k n part 1
-      _E[i] += proba[k] * pit[k] ;
-    }
-    pit = 0;
-
-
+  }
+  for(int i = 0; i<n; i++){
+    cout << "E["<<i<<"]="<<_E[i]<<"\n";
   }
 
-  /*cut creation*/
-  /* IloExpr cut(env);
-
-  for(int k = 0; k < n; k++ ){
-    cut -=_E[k] * x[k];
-  }
-
-  cut += _e; //>= theta
-  return cut;*/
 }
 
 
@@ -240,7 +226,7 @@ void SubProb::optimalCut(){
  *
  * @return Generate the new cut from the sub problem
  */
-bool SubProb::solve(Parser &p, IloNumVarArray x){
+ bool SubProb::solve(Parser &p, IloNumVarArray x){
   IloExpr cut(env);
   // if(!K2Test()){ //Recours complet donc forcément dans K2
   //   cout<<"!K2Test\n";
@@ -249,10 +235,9 @@ bool SubProb::solve(Parser &p, IloNumVarArray x){
   // }
 
     initScenario(); //Traitement des sous problèmes
-    cout << "inti donnennnne\n";
+    optimalCut();
     if(!optimTest()){
       cout<<"!optimTest\n";
-      optimalCut();
       return true;
     }
     return false;  

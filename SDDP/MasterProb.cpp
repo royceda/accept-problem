@@ -48,25 +48,31 @@ SubProb MasterProb::sub() {
         IloNumVarArray x(env, p.nbCommands());
 
         //Initialize MasterProb
-        cout<<"OKLM 1\n";
-        
         for (int i = 0; i < p.nbCommands(); i++) {
             x[i] = IloNumVar(env, 0, 1, ILOBOOL);
         }
+        cout <<"nbC : "<< p.nbCommands()<<"\n";
+        cout <<"x: "<<x<<"\n";
 
         IloNumVar theta(env, -IloInfinity, 0, ILOINT);
 
-        IloExpr eObj(env);
+        IloExpr eObj1(env);
 
         for (int i = 0; i < p.nbCommands(); i++) {
-            eObj += (p.benefVector()[i] * x[i]);
+            eObj1 += (p.benefVector()[i] * x[i]);
         }
 
-        eObj += theta;
+        IloExpr eObj2(env);
+        eObj2 += theta;
+
+
+        IloExpr eObj(env);
+        eObj = eObj1 + eObj2;
+
+        cout << "OBJECTIVE : max "<< eObj <<"\n";
 
         IloObjective obj(env, eObj, IloObjective::Maximize, "OBJ");
         model.add(obj);
-        cout<<"OKLM 2\n";
         /*Contraintes initiales
          =>Y'en a pas*/
 
@@ -79,18 +85,15 @@ SubProb MasterProb::sub() {
             IloCplex cplexMaster(model);
             cplexMaster.solve();
 
-
-            cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
+            cout <<"\n\nMASTER SOL without sub = " <<cplexMaster.getObjValue()<<"\n\n";
             for (int i = 0; i < p.nbCommands(); i++) {
                 cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
             }
-
 
             IloNumArray _x(env, p.nbCommands());
             cplexMaster.getValues(_x,x);
             _theta = cplexMaster.getValue(theta);
             SubProb *subProb = new SubProb(env,_x,_theta,p);
-            cout<<"readyToSolve\n";
             newOrNot = subProb->solve(p,x);
             // if(newOrNot == 0){ //Feasible Cut       //Always in K2 because of a complete recours
             //     for(int i =0; i<p.nbCommands(); i++){
@@ -106,7 +109,9 @@ SubProb MasterProb::sub() {
                     newConstraint += subProb->getE()[i]*x[i];
                 }
                 newConstraint += subProb->gete();
+                IloNumVar theta(env, -IloInfinity, 0, ILOINT);
                 model.add(theta<=newConstraint);
+                cout<<"NEW CUT ADDED"<<newConstraint<<"\n";
             }
 
             else    
@@ -116,10 +121,8 @@ SubProb MasterProb::sub() {
             for (int i = 0; i < p.nbCommands(); i++) {
                 cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
             }
+            count++;
         }
-        cout<<"OKLM 3\n";
-
-
 
     } catch (IloException& e) {
         cerr << "EEXECPTION CATCHED WHILE CPLEXING MASTER : " << e << "\n";

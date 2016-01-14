@@ -23,7 +23,7 @@ using namespace std;
 int main(int argc, char** argv) {
 
     IloEnv env;
-    Parser* p = new Parser("./../Instances/data_O5/OA_O5_S3_L0.2_B10_R5_2.txt");
+    Parser* p = new Parser("./../Instances/data_O10/OA_O10_S10_L0.5_B10_R10_1.txt");
     cout << "Parsing done\n";
     p->printParser();
     Determinist * det = new Determinist();

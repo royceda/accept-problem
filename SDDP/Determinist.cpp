@@ -58,6 +58,7 @@
             e12.end();
         }
 
+        cout << "Obj : "<<e0 - e1<<"\n"; 
         IloObjective obj(env, e0 - e1, IloObjective::Maximize, "OBJ");
         model.add(obj);
         e0.end();
