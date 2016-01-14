@@ -28,31 +28,39 @@ public:
   virtual ~SubProb();
 
   IloExpr solve(Parser &p, IloArray<IloNumVar> x);
-  IloExpr optimalCut(IloArray<IloNumVar> x); 
-  IloExpr feasibleCut(IloArray<IloNumVar> x); //TODO
+
 
   IloNumArray getE();
   IloNum gete();
 
 
 protected:
-  bool K2Test(); //TODO
+  bool K2Test();
   void initScenario();
   bool optimTest();
+  IloExpr optimalCut(IloArray<IloNumVar> x);
+  IloExpr feasibleCut(IloArray<IloNumVar> theta); //TODO
 
 
 private:
   IloEnv env;
+
+  //fixed value
   IloNum _theta;
   IloNumArray _x;
 
-  //vector<IloObjective> obj;
+  //cplex stuff
   vector<IloModel> model;
   IloArray <IloRangeArray> constraints;
   IloArray <IloNumArray>  primal; //primal values of subprob
   IloArray <IloNumArray> pi;  //dual values of subprob
   IloArray <IloNumVarArray> y; //other commands
 
+  //feasible cut composites
+  IloNumArray _D;
+  IloNum _d;
+
+  //optim cut composites
   IloNumArray _E;
   IloNum _e;
 

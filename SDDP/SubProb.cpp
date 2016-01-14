@@ -41,9 +41,68 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
 }
 
 bool SubProb::K2Test(){
+  //h-Tx >= 0 de n a 2n <= 0 de 0 a n
+  for(int s = 0; s <S; s++){
+    int sum1 = 0;
+    for( int  i = 0; i<n; i++){
+      sum1 +=  d[s][i] * _x[i];
+    }
 
+    if(sum1 > D){
+      return false;
+    }
+  }
+  for(int i = 0; i < n; i++){
+    if(_x[i] < 0){
+      return false;
+    }
+  }
   return true;
 }
+
+
+IloExpr SubProb::feasibleCut(IloArray<IloNumVar> theta){
+
+  //creation of D and d from theta
+  for(int k = 0; k < S; k++){
+    IloNum pid(0);
+    for(int i = 0; i < n; i++){ //vector prod
+      pid += _theta * D;
+    }
+    _d += pid;
+    pid = 0;
+  }
+
+/*
+  //il y a 2n var dual car 2n contrainte
+  for(int i = 0; i < n; i++){
+    IloNumArray pit(0);
+    for(int j = 0; j < S; j++){//matrix prod part 1
+      pit[i] +=  _theta * d[j][i];
+    }
+
+    for(int j = n; j < 2*n; j++){//matrix prod part2
+      pit[i] +=  _theta * 1; //row x col2
+    }
+
+    for(int k = 0; k < S; k++){//sum with k n part 1
+      _D[i] += proba[k] * pit[k] ;
+    }
+    pit = 0;
+  }
+
+  //cut creation
+  IloExpr cut(env);
+
+  for(int k = 0; k < n; k++ ){
+    cut += _D[k] * theta ;
+  }
+
+  cut += -_d; //>= 0
+  return cut;*/
+  return NULL;
+}
+
 
 
 bool SubProb::optimTest(){
@@ -122,7 +181,7 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
       pid += pi[k][i] * D;
     }
     _e += proba[k] * pid ;
-
+    pid = 0;
   }
 
 
@@ -140,6 +199,7 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
     for(int k = 0; k < S; k++){//sum with k n part 1
       _E[i] += proba[k] * pit[k] ;
     }
+    pit = 0;
 
 
   }
@@ -148,9 +208,10 @@ IloExpr SubProb::optimalCut(IloArray<IloNumVar> x){
   IloExpr cut(env);
 
   for(int k = 0; k < n; k++ ){
-    cut = _e - _E[k]*x[k];
+    cut -=_E[k] * x[k];
   }
 
+  cut += _e; //>= theta
   return cut;
 }
 
