@@ -86,6 +86,7 @@ cout<<"OKLM 1\n";
         _theta = cplexMaster.getValue(theta);
 cout<<"OKLM 1\n";
             SubProb *subProb = new SubProb(env,_x,_theta,p);
+            cout<<"readyToSolve\n";
             newOrNot = subProb->solve(p,x);
             if(newOrNot == 0){ //Feasible Cut
                 for(int i =0; i<p.nbCommands(); i++){

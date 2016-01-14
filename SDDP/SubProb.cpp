@@ -39,15 +39,28 @@ IloNum SubProb::getd(){
 
 
 SubProb::SubProb(IloEnv &env1, IloNumArray x, IloNum theta, Parser &p):env(env1), _x(x),
-_theta(theta), D(p.capacity()), n(p.nbCommands()), S(p.nbScenario()), y(env, S), _e(0),
-primal(env, S), pi(env, S), constraints(env), d(p.durationScenarTask()),
+_theta(theta), D(p.capacity()), n(p.nbCommands()), S(p.nbScenario()), _e(0), constraints(env), d(p.durationScenarTask()),
 proba(p.probaVector()), sub(p.subTreatedCost()){
+
+
+//  IloEnv env(env1);
+  IloArray<IloNumVarArray> ytmp(env, S);
+  y = ytmp;
+  IloArray<IloNumArray> pitmp(env,S);
+  pi = pitmp;
+    IloArray<IloNumArray> primaltmp(env,S);
+  primal = primaltmp;
   /*initilization for each scenario*/
   for (int i = 0; i < S; i++) {
-    y[i]      = IloNumVarArray(env, S, 0, 1, ILOBOOL);
+    cout<<i<<"\n";
+    y[i]      = IloNumVarArray(env, n, 0, 1, ILOBOOL);
+    cout<<"y done\n";
     pi[i]     = IloNumArray(env, 2*n); //car 2n contrainte
+    cout<<"pi done\n";
     primal[i] = IloNumArray(env, n);
-    model[i]  = IloModel(env);
+    cout<<"primal done\n";
+    model.push_back(IloModel(env));
+    cout << "endOf "<<i<<"\n";
   }
 }
 
@@ -236,13 +249,16 @@ void SubProb::optimalCut(){
  */
 int SubProb::solve(Parser &p, IloNumVarArray x){
   IloExpr cut(env);
+      cout<<"!K2Test\n";
   if(!K2Test()){
+    cout<<"!K2Test\n";
     feasibleCut();
     return 0;
   }
   else{
     initScenario();
     if(!optimTest()){
+      cout<<"!optimTest\n";
       optimalCut();
       return 1;
     }
