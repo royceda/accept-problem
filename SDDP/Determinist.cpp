@@ -91,6 +91,9 @@
         IloCplex cplex(model);
         cplex.solve();
         cout <<"\n\nSOL= " <<cplex.getObjValue()<<"\n\n";
+        for (int i = 0; i < p.nbCommands(); i++) {
+            cout << "x" << i << " = " << cplex.getValue(x[i]) << "\n";
+        }
 
     } catch (IloException &e) {
         cerr << "EXECPTION CAUGHT WHILE CPLEXING\n"<<e<<"\n";

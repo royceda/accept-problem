@@ -57,7 +57,7 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
 
   /*initilization for each scenario*/
   for (int i = 0; i < S; i++) {
-    y[i]      = IloNumVarArray(env, n, 0, 1, ILOFLOAT);
+    y[i]      = IloNumVarArray(env, n, 0, 1);
     pi[i]     = IloNumArray(env, n+1); //car 2n contrainte
     primal[i] = IloNumArray(env, n);
     model.push_back(IloModel(env));
@@ -154,7 +154,7 @@ void SubProb::initScenario(){
         e0 += y[s][i] * sub[i];
       }
 
-      e0 = e0*proba[s];
+      //e0 = e0*proba[s];
 
       IloObjective obj(env, -e0, IloObjective::Maximize, "OBJ");
       e0.end();
