@@ -111,10 +111,13 @@ SubProb MasterProb::sub() {
                 }
                 newConstraint += subProb->gete();
                 IloNumVar theta(env, -IloInfinity, 0, ILOINT);
-                lazy.add(newConstraint >= theta);
-                cplexMaster.addLazyConstraints (lazy);
-                cplexMaster.LazyConstraintCallback();
+                //lazy.add(newConstraint >= theta);
+                //cplexMaster.addLazyConstraints (lazy);
+                //cplexMaster.LazyConstraintCallback();
+                cplexMaster.end();
+                model.add(newConstraint >= theta);
                 cout<<"NEW CUT ADDED"<<theta<<" <= "<<newConstraint<<"\n";
+
             }
 
             else    
