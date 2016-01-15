@@ -6,6 +6,7 @@
  */
 
 #include "MasterProb.h"
+#include <iostream>
 
  ILOSTLBEGIN
 
@@ -30,7 +31,7 @@ SubProb MasterProb::sub() {
         return _x;
     }
 
-    IloNum  MasterProb::theta(){
+    IloNum  MasterProb::Theta(){
         return _theta;
     }
 
@@ -48,23 +49,29 @@ SubProb MasterProb::sub() {
         IloNumVarArray x(env, p.nbCommands());
 
         //Initialize MasterProb
+        char nameX[256];
         for (int i = 0; i < p.nbCommands(); i++) {
-            x[i] = IloNumVar(env, 0, 1, ILOBOOL);
+            
+            sprintf(nameX, "x %d ", i);
+            x[i] = IloNumVar(env, 0, 1, ILOBOOL, nameX);
         }
         cout <<"nbC : "<< p.nbCommands()<<"\n";
         cout <<"x: "<<x<<"\n";
 
-        IloNumVar theta(env, -IloInfinity, 0, ILOINT);
+        char nameTheta[256];
+        sprintf(nameTheta, "theta");
+        IloNumVar theta(env, -IloInfinity, 0, ILOINT,nameTheta);
 
         IloExpr eObj1(env);
 
         for (int i = 0; i < p.nbCommands(); i++) {
             eObj1 += (p.benefVector()[i] * x[i]);
         }
-
+        cout << "BENEF ::::::::::::: "<<eObj1<<"\n";
         IloExpr eObj2(env);
         eObj2 += theta;
 
+        cout << "eObj2"<<eObj2<<"\n";
 
         IloExpr eObj(env);
         eObj = eObj1 + eObj2;
@@ -80,13 +87,17 @@ SubProb MasterProb::sub() {
         int v = 0;
         IloExpr newConstraint(env);
         IloRangeArray lazy;
-        bool newOrNot;
+        bool newOrNot = true;
         int count = 0;
-        while(count < 100){
+        while(newOrNot){
+            //cout<< "MODEL : "<<model<<"\n";
+
             IloCplex cplexMaster(model);
             cplexMaster.solve();
 
-            cout <<"\n\nMASTER SOL without sub = " <<cplexMaster.getObjValue()<<"\n\n";
+            cout << "MODEL : "<< model <<"\n";
+
+            cout <<"\n\nMASTER SOL = " <<cplexMaster.getObjValue()<<"\n\n";
             for (int i = 0; i < p.nbCommands(); i++) {
                 cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
             }
@@ -107,26 +118,26 @@ SubProb MasterProb::sub() {
             if(newOrNot){ //Optimal Cut
                 cout << "NEW CUT TO ADD\n";
                 for(int i =0; i<p.nbCommands(); i++){
-                    newConstraint += subProb->getE()[i]*x[i];
+                    newConstraint -= subProb->getE()[i]*x[i];
                 }
                 newConstraint += subProb->gete();
-                IloNumVar theta(env, -IloInfinity, 0, ILOINT);
+                //IloNumVar theta(env, -IloInfinity, 0, ILOINT);
                 //lazy.add(newConstraint >= theta);
                 //cplexMaster.addLazyConstraints (lazy);
                 //cplexMaster.LazyConstraintCallback();
-                cplexMaster.end();
+                //cplexMaster.end();
                 model.add(newConstraint >= theta);
                 cout<<"NEW CUT ADDED"<<theta<<" <= "<<newConstraint<<"\n";
-
+                cplexMaster.end();
             }
 
             else    
                 break;
-            count ++;
-            cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
-            for (int i = 0; i < p.nbCommands(); i++) {
-                cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
-            }
+            // count ++;
+            // cout <<"\n\nSOL= " <<cplexMaster.getObjValue()<<"\n\n";
+            // for (int i = 0; i < p.nbCommands(); i++) {
+            //     cout << "x" << i << " = " << cplexMaster.getValue(x[i]) << "\n";
+            // }
             count++;
         }
 

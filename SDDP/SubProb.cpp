@@ -57,15 +57,10 @@ proba(p.probaVector()), sub(p.subTreatedCost()){
 
   /*initilization for each scenario*/
   for (int i = 0; i < S; i++) {
-    cout<<i<<"\n";
     y[i]      = IloNumVarArray(env, n, 0, 1, ILOFLOAT);
-    cout<<"y done\n";
     pi[i]     = IloNumArray(env, n+1); //car 2n contrainte
-    cout<<"pi done\n";
     primal[i] = IloNumArray(env, n);
-    cout<<"primal done\n";
     model.push_back(IloModel(env));
-    cout << "endOf "<<i<<"\n";
     constraints[i] = IloRangeArray(env);
   }
 }
@@ -159,6 +154,8 @@ void SubProb::initScenario(){
         e0 += y[s][i] * sub[i];
       }
 
+      e0 = e0*proba[s];
+
       IloObjective obj(env, -e0, IloObjective::Maximize, "OBJ");
       e0.end();
       model[s].add(obj);
@@ -181,7 +178,7 @@ void SubProb::initScenario(){
       cplex.getValues(primal[s], y[s]);
       cplex.getDuals(pi[s], constraints[s]);
       cplex.end();
-      cout<<"pi = "<<pi<<"\n";
+      //cout<<"pi = "<<pi<<"\n";
     }
 
   }catch (IloException& e) {
@@ -201,8 +198,8 @@ void SubProb::optimalCut(){
     _e += proba[k] * pid ;
     pid = 0;
   }
-  cout<<"size pit : "<<pi.getSize()<<"\n";
-  cout<<"size pi[0] = "<<pi[0].getSize()<<"\n";
+  //cout<<"size pit : "<<pi.getSize()<<"\n";
+  //cout<<"size pi[0] = "<<pi[0].getSize()<<"\n";
   //il y a 2n var dual car 2n contrainte
   IloNumArray pit(env,n);
 
@@ -215,9 +212,9 @@ void SubProb::optimalCut(){
       _E[i] += (d[i][j]*pi[j][0])*proba[j];
     }
   }
-  for(int i = 0; i<n; i++){
-    cout << "E["<<i<<"]="<<_E[i]<<"\n";
-  }
+  // for(int i = 0; i<n; i++){
+  //   cout << "E["<<i<<"]="<<_E[i]<<"\n";
+  // }
 
 }
 

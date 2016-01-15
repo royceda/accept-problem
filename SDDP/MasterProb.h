@@ -25,7 +25,7 @@ public:
     void solve(Parser &p);  
 
     IloNumArray x();
-    IloNum theta();
+    IloNum Theta();
 
 private:
 //    SubProb _sub;
