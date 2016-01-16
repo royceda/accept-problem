@@ -1,16 +1,3 @@
-/*
- * File:   SubProb.h
- * Author: rboudjeltia
- *
- * Created on 18 décembre 2015, 10:59
- */
-
-
-/**
-*TODO
-* feasibible cut
-* K2 test
-*/
 #ifndef SUBPROB_H
 #define	SUBPROB_H
 

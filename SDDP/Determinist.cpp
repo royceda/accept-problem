@@ -1,10 +1,3 @@
-/* 
- * File:   Determinist.cpp
- * Author: rboudjeltia
- * 
- * Created on 16 décembre 2015, 14:44
- */
-
 #include <ilcplex/ilocplex.h>
 #include "Determinist.h"
 
@@ -52,7 +45,7 @@
         for (unsigned int j = 0; j < s; j++) {
             IloExpr e12(env);
             for (unsigned int i = 0; i < n; i++) {
-                e12 += p.probaVector()[j] * p.subTreatedCost()[i] * y[i][j];
+                e12 += p.subTreatedCost()[i] * y[i][j];
             }
             e1 += p.probaVector()[j] * e12;
             e12.end();
@@ -93,6 +86,11 @@
         cout <<"\n\nSOL= " <<cplex.getObjValue()<<"\n\n";
         for (int i = 0; i < p.nbCommands(); i++) {
             cout << "x" << i << " = " << cplex.getValue(x[i]) << "\n";
+        }
+        for(int i = 0; i < p.nbCommands(); i++){
+            for(int j = 0; j< s; j++){
+                cout<<"y"<<i<<j<<" = "<<cplex.getValue(y[i][j])<<"\n";
+            }
         }
 
     } catch (IloException &e) {

@@ -1,10 +1,3 @@
-/* 
- * File:   MasterProb.cpp
- * Author: rboudjeltia
- * 
- * Created on 18 décembre 2015, 11:01
- */
-
 #include "MasterProb.h"
 #include <iostream>
 
@@ -60,7 +53,7 @@ SubProb MasterProb::sub() {
 
         char nameTheta[256];
         sprintf(nameTheta, "theta");
-        IloNumVar theta(env, -IloInfinity, 0, ILOINT,nameTheta);
+        IloNumVar theta(env, -IloInfinity, 0, ILOFLOAT,nameTheta);
 
         IloExpr eObj1(env);
 

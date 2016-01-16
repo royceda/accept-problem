@@ -1,10 +1,3 @@
-/* 
- * File:   Parser.cpp
- * Author: yoannjvr
- *
- * Created on 16 décembre 2015, 13:48
- */
-
 #include <cstdlib>
 #include <sstream>
 #include <iostream>
